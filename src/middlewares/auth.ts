@@ -7,7 +7,6 @@ export const loginAuth = (req: any, res: any, next: any) => {
       error: `Invalid email or password. \n ${error.message}`,
     });
   }
-
   next();
 };
 
