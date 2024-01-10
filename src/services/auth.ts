@@ -20,11 +20,12 @@ import { SALT_ROUNDS } from '../constants/constants';
 import { ILoginData } from '../interfaces/ILoginData';
 import { IRegistrationData } from '../interfaces/IRegistrationData';
 import BadRequestError from '../errors/BadRequestError';
-import { ACCESS_TOKEN_EXPIRY, REFRESH_TOKEN_EXPIRY } from '../constants/constants';
+import {
+  ACCESS_TOKEN_EXPIRY,
+  REFRESH_TOKEN_EXPIRY,
+} from '../constants/constants';
 import config from '../config';
 import { error } from 'console';
-
-
 
 const prisma = new PrismaClient();
 
@@ -83,5 +84,3 @@ export const handleLogin = async (body: ILoginData) => {
     refreshToken,
   };
 };
-
-
