@@ -14,28 +14,57 @@
 
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { PrismaClient } from '@prisma/client';
+
+import { SALT_ROUNDS } from '../constants/constants';
 import { ILoginData } from '../interfaces/ILoginData';
 import { IRegistrationData } from '../interfaces/IRegistrationData';
-import { PrismaClient } from '@prisma/client';
 import BadRequestError from '../errors/BadRequestError';
-import { ACCESS_TOKEN_EXPIRY, REFRESH_TOKEN_EXPIRY } from '../constants/jwt';
+import { ACCESS_TOKEN_EXPIRY, REFRESH_TOKEN_EXPIRY } from '../constants/constants';
 import config from '../config';
 import { error } from 'console';
-// import { ACCESS_TOKEN_EXPIRY, REFRESH_TOKEN_EXPIRY } from '../constants/jwt';
 
-const SALT_ROUNDS = 10;
+
 
 const prisma = new PrismaClient();
-export const handleLogin = async (loginData: ILoginData) => {
+
+// ------------------- business logic for registration ------------------
+export const handleRegister = async (body: IRegistrationData) => {
+  const userEmailExits = await prisma.user.findFirst({
+    where: { email: body.email },
+  });
+  if (userEmailExits) {
+    throw new BadRequestError(`User with email: ${body.email} already exists`);
+  }
+  const hashedPassword = await bcrypt.hash(body.password, SALT_ROUNDS);
+
+  const newUser = await prisma.user.create({
+    data: {
+      full_name: body.fullname,
+      gender: body.gender,
+      age: body.age,
+      address: body.address,
+      phone_number: body.phoneNumber,
+      email: body.email,
+      password: hashedPassword,
+    },
+  });
+  return {
+    message: 'User registered successfully',
+  };
+};
+
+// ------------------- business logic for login ------------------
+export const handleLogin = async (body: ILoginData) => {
   const user = await prisma.user.findFirst({
-    where: { email: loginData.email },
+    where: { email: body.email },
   });
 
   if (!user) {
     throw new BadRequestError('Invalid email or password');
   }
 
-  const passwordMatch = await bcrypt.compare(loginData.password, user.password);
+  const passwordMatch = await bcrypt.compare(body.password, user.password);
 
   if (!passwordMatch) {
     throw new BadRequestError('Invalid email or password');
@@ -55,32 +84,4 @@ export const handleLogin = async (loginData: ILoginData) => {
   };
 };
 
-export const handleRegister = async (registrationData: IRegistrationData) => {
-  const userEmailExits = await prisma.user.findFirst({
-    where: { email: registrationData.email },
-  });
-  if (userEmailExits) {
-    throw new BadRequestError(
-      `User with email: ${registrationData.email} already exists`
-    );
-  }
-  const hashedPassword = await bcrypt.hash(
-    registrationData.password,
-    SALT_ROUNDS
-  );
 
-  const newUser = await prisma.user.create({
-    data: {
-      full_name: registrationData.fullname,
-      gender: registrationData.gender,
-      age: registrationData.age,
-      address: registrationData.address,
-      phone_number: registrationData.phoneNumber,
-      email: registrationData.email,
-      password: hashedPassword,
-    },
-  });
-  return {
-    message: 'User registered successfully',
-  };
-};
