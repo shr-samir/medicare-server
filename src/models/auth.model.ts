@@ -1,17 +1,3 @@
-// import * as authRepo from '../repositories/auth';
-// import { ILoginData } from '../interfaces/ILoginData';
-// import { IRegistrationData } from '../interfaces/IRegistrationData';
-
-// export const handleLogin = async (loginData: ILoginData) => {
-//   const data = authRepo.handleLogin(loginData);
-//   return data;
-// };
-
-// export const handleRegister = async (registrationData: IRegistrationData) => {
-//   const data = authRepo.handleRegister(registrationData);
-//   return data;
-// };
-
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
@@ -29,7 +15,6 @@ import { error } from 'console';
 
 const prisma = new PrismaClient();
 
-// ------------------- business logic for registration ------------------
 export const handleRegister = async (body: IRegistrationData) => {
   const userEmailExits = await prisma.user.findFirst({
     where: { email: body.email },
@@ -55,7 +40,7 @@ export const handleRegister = async (body: IRegistrationData) => {
   };
 };
 
-// ------------------- business logic for login ------------------
+
 export const handleLogin = async (body: ILoginData) => {
   const user = await prisma.user.findFirst({
     where: { email: body.email },
@@ -71,9 +56,13 @@ export const handleLogin = async (body: ILoginData) => {
     throw new BadRequestError('Invalid email or password');
   }
 
-  const accessToken = jwt.sign(user, config.jwt.accessTokenSecret!, {
-    expiresIn: ACCESS_TOKEN_EXPIRY,
-  });
+  const accessToken = jwt.sign(
+    { id: user.id, email: user.email, fullName: user.full_name },
+    config.jwt.accessTokenSecret!,
+    {
+      expiresIn: ACCESS_TOKEN_EXPIRY,
+    }
+  );
 
   const refreshToken = jwt.sign(user, config.jwt.refreshTokenSecret!, {
     expiresIn: REFRESH_TOKEN_EXPIRY,

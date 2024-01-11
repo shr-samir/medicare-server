@@ -1,4 +1,4 @@
-import { loginSchema, registerSchema } from '../schemas/auth';
+import { loginSchema, registerSchema } from '../schemas/auth.schema';
 
 export const loginAuth = (req: any, res: any, next: any) => {
   const { error } = loginSchema.validate(req.body);
