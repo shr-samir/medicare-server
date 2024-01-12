@@ -1,4 +1,6 @@
-export interface IRegistrationData {
+import { IBase } from './IBase';
+
+export interface IRegistrationData extends IBase {
   fullname: string;
   gender: string;
   age: number;

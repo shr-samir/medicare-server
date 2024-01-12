@@ -35,9 +35,9 @@ export const handleRegister = async (body: IRegistrationData) => {
       password: hashedPassword,
     },
   });
-  return {
+  return ({
     message: 'User registered successfully',
-  };
+  });
 };
 
 
