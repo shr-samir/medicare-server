@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 import UnauthenticatedError from '../errors/UnauthenticatedError';
 
-import config from '../config'
+import config from '../config';
 
 export const jwtAuth = (req: any, res: Response, next: NextFunction) => {
   try {
@@ -16,7 +16,7 @@ export const jwtAuth = (req: any, res: Response, next: NextFunction) => {
     const decode = jwt.verify(token, config.jwt.accessTokenSecret!); // ! means it will not be null or undefined at runtime
 
     req.user = decode;
-
+    console.log('decoded user : ', decode);
     next();
   } catch (error) {
     next(error);

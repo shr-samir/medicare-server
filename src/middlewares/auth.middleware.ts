@@ -1,6 +1,7 @@
+import { Request, Response, NextFunction } from 'express';
 import { loginSchema, registerSchema } from '../schemas/auth.schema';
 
-export const loginAuth = (req: any, res: any, next: any) => {
+export const loginAuth = (req: Request, res: Response, next: NextFunction) => {
   const { error } = loginSchema.validate(req.body);
   if ( error ) {
     return res.status(400).json({
@@ -10,7 +11,7 @@ export const loginAuth = (req: any, res: any, next: any) => {
   next();
 };
 
-export const registerAuth = (req: any, res: any, next: any) => {
+export const registerAuth = (req: Request, res: Response, next: NextFunction) => {
   const {error} = registerSchema.validate(req.body);
   if ( error ) {
     return res.status(400).json({

@@ -35,8 +35,11 @@ export const handleRegister = async (body: IRegistrationData) => {
       password: hashedPassword,
     },
   });
+  // delete newUser.password;
+  const userWithoutPassword = { ...newUser, password: undefined };
   return ({
     message: 'User registered successfully',
+    user: userWithoutPassword
   });
 };
 
