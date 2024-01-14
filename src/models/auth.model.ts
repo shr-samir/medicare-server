@@ -37,12 +37,11 @@ export const handleRegister = async (body: IRegistrationData) => {
   });
   // delete newUser.password;
   const userWithoutPassword = { ...newUser, password: undefined };
-  return ({
+  return {
     message: 'User registered successfully',
-    user: userWithoutPassword
-  });
+    user: userWithoutPassword,
+  };
 };
-
 
 export const handleLogin = async (body: ILoginData) => {
   const user = await prisma.user.findFirst({
@@ -72,6 +71,8 @@ export const handleLogin = async (body: ILoginData) => {
   });
 
   return {
+    fullName: user.full_name,
+    role: user.role,
     accessToken,
     refreshToken,
   };
