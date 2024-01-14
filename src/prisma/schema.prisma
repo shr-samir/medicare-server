@@ -80,6 +80,7 @@ enum Gender{
 
 model Doctor{
 id                  Int          @id @default(autoincrement())
+education           String       @db.VarChar(50)
 specialization      String       @db.VarChar(50)
 experience          Int
 status              Status @default(PENDING)

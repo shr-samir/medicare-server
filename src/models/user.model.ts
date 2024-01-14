@@ -10,6 +10,18 @@ export const getAllUser = async () => {
         status: 'APPROVED',
       },
     });
+
+    await Promise.all(
+      doctors.map(async (doctor) => {
+        const user = await prisma.user.findUnique({
+          where: {
+            id: doctor.userId,
+          },
+        });
+        doctor['doctorName'] = user.full_name;
+      })
+    );
+
     const patients = await prisma.user.findMany({
       where: {
         role: 'PATIENT',
@@ -149,12 +161,22 @@ export const deleteAppointment = async (id: any) => {
 
 export const getAllDoctors = async () => {
   try {
-    const doctors = await prisma.doctor.findMany({
+    let doctors = await prisma.doctor.findMany({
       where: {
         is_available: true,
         status: 'APPROVED',
       },
     });
+    await Promise.all(
+      doctors.map(async (doctor) => {
+        const user = await prisma.user.findUnique({
+          where: {
+            id: doctor.userId,
+          },
+        });
+        doctor['doctorName'] = user.full_name;
+      })
+    );
     return {
       message: 'doctors found',
       doctors: doctors,
@@ -162,6 +184,7 @@ export const getAllDoctors = async () => {
   } catch (err) {
     return 'Error occured : ' + err;
   }
+
 };
 
 export const getAllPatientAssociatedwithhimself = async (id: any) => {

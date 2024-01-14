@@ -28,6 +28,7 @@ CREATE TABLE "User" (
 -- CreateTable
 CREATE TABLE "Doctor" (
     "id" SERIAL NOT NULL,
+    "education" VARCHAR(50) NOT NULL,
     "specialization" VARCHAR(50) NOT NULL,
     "experience" INTEGER NOT NULL,
     "status" "Status" NOT NULL DEFAULT 'PENDING',
