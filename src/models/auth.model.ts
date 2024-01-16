@@ -11,36 +11,41 @@ import {
   REFRESH_TOKEN_EXPIRY,
 } from '../constants/constants';
 import config from '../config';
-import { error } from 'console';
 
 const prisma = new PrismaClient();
 
 export const handleRegister = async (body: IRegistrationData) => {
-  const userEmailExits = await prisma.user.findFirst({
-    where: { email: body.email },
-  });
-  if (userEmailExits) {
-    throw new BadRequestError(`User with email: ${body.email} already exists`);
-  }
-  const hashedPassword = await bcrypt.hash(body.password, SALT_ROUNDS);
+  try {
+    const userEmailExits = await prisma.user.findFirst({
+      where: { email: body.email },
+    });
+    if (userEmailExits) {
+      throw new BadRequestError(
+        `User with email: ${body.email} already exists`
+      );
+    }
+    const hashedPassword = await bcrypt.hash(body.password, SALT_ROUNDS);
 
-  const newUser = await prisma.user.create({
-    data: {
-      full_name: body.fullname,
-      gender: body.gender,
-      age: body.age,
-      address: body.address,
-      phone_number: body.phoneNumber,
-      email: body.email,
-      password: hashedPassword,
-    },
-  });
-  // delete newUser.password;
-  const userWithoutPassword = { ...newUser, password: undefined };
-  return {
-    message: 'User registered successfully',
-    user: userWithoutPassword,
-  };
+    const newUser = await prisma.user.create({
+      data: {
+        full_name: body.fullname,
+        gender: body.gender,
+        age: body.age,
+        address: body.address,
+        phone_number: body.phoneNumber,
+        email: body.email,
+        password: hashedPassword,
+      },
+    });
+    // delete newUser.password;
+    const userWithoutPassword = { ...newUser, password: undefined };
+    return {
+      message: 'User registered successfully',
+      user: userWithoutPassword,
+    };
+  } catch (error) {
+    throw new BadRequestError('Invalid email or password');
+  }
 };
 
 export const handleLogin = async (body: ILoginData) => {
@@ -77,3 +82,5 @@ export const handleLogin = async (body: ILoginData) => {
     refreshToken,
   };
 };
+
+export const handleLogout = async () => {};

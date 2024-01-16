@@ -3,12 +3,18 @@ import { ILoginData } from '../interfaces/ILoginData';
 import { IRegistrationData } from '../interfaces/IRegistrationData';
 
 export const handleRegister = async (registrationData: IRegistrationData) => {
-  const data = authModel.handleRegister(registrationData);
-  return data;
+  try {
+    const data = authModel.handleRegister(registrationData);
+    return data;
+  } catch (err) {
+    throw err;
+  }
 };
 export const handleLogin = async (loginData: ILoginData) => {
-  const data = authModel.handleLogin(loginData);
-  return data;
+  try {
+    const data = authModel.handleLogin(loginData);
+    return data;
+  } catch (err) {
+    throw err;
+  }
 };
-
-

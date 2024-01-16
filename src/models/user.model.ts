@@ -80,20 +80,35 @@ export const deleteUser = async (id: any) => {
 export const createAppointment = async (body: any, id: any) => {
   // const currentTime =  new Date(Date.now())
   const dataTime = new Date(body.data_time);
+  const doctorId = body.doctorId;
   const oneHrEarlier = new Date(dataTime.getTime() - 60 * 60 * 1000);
 
   try {
+    const doctor = await prisma.doctor.findUnique({
+      where: {
+        id: doctorId,
+      },
+    });
+    const doctorStartTime = doctor.start_date;
+    const doctorEndTime = doctor.end_date;
+
+    if (
+      !(dataTime.getHours() > doctorStartTime.getHours()) ||
+      !(dataTime.getHours() < doctorEndTime.getHours())
+    ) {
+      return new Error('Doctor is not available at that time');
+    }
     const existingAppointments = await prisma.appointment.findMany({
       where: {
         AND: [
           {
             data_time: {
-              gte: oneHrEarlier,
+              gte: oneHrEarlier, //Subtracting 1 hr to the currentTime
             },
           },
           {
             data_time: {
-              lt: dataTime, // Adding 1 hour to the specified time
+              lt: dataTime,
             },
           },
         ],
